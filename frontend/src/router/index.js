@@ -64,6 +64,12 @@ const routes = [
     meta: { requiresAuth: true, requiresOwner: true },
   },
   {
+    path: '/admin',
+    name: 'admin-dashboard',
+    component: () => import('../views/AdminDashboard.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: () => import('../views/NotFound.vue'),
@@ -90,6 +96,9 @@ router.beforeEach((to) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
   if (to.meta.requiresOwner && !auth.isOwner) {
+    return { name: 'browse-pitches' }
+  }
+  if (to.meta.requiresAdmin && !auth.isAdmin) {
     return { name: 'browse-pitches' }
   }
   return true

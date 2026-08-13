@@ -18,7 +18,9 @@ function handleLogout() {
         :to="auth.isAuthenticated ? { name: 'browse-pitches' } : { name: 'welcome' }"
         class="flex items-center gap-2 text-xl font-bold text-indigo-700"
       >
-        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-700 text-amber-400">
+        <span
+          class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-700 text-amber-400"
+        >
           <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4">
             <path
               d="M12 2 L14.5 9 L21 9.5 L15.8 14 L17.5 21 L12 17 L6.5 21 L8.2 14 L3 9.5 L9.5 9 Z"
@@ -34,11 +36,12 @@ function handleLogout() {
           <RouterLink :to="{ name: 'browse-pitches' }" class="hover:text-indigo-700">
             Browse pitches
           </RouterLink>
-          <RouterLink to="/my-bookings" class="hover:text-indigo-700">
-            My bookings
-          </RouterLink>
+          <RouterLink to="/my-bookings" class="hover:text-indigo-700"> My bookings </RouterLink>
           <RouterLink v-if="auth.isOwner" to="/owner" class="hover:text-indigo-700">
             Owner dashboard
+          </RouterLink>
+          <RouterLink v-if="auth.isAdmin" to="/admin" class="hover:text-indigo-700">
+            Admin
           </RouterLink>
           <RouterLink to="/profile" class="hover:text-indigo-700">
             {{ auth.user?.name }}
