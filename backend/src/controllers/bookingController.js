@@ -1,12 +1,18 @@
 const { Op } = require('sequelize');
-const { sequelize, Booking, Pitch, User } = require('../models');
+const { sequelize, Booking, Pitch, User, Waitlist, Closure } = require('../models');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { notifyAutomation } = require('../utils/webhook');
-const { sendBookingConfirmationEmail } = require('../utils/mailer');
+const { sendBookingConfirmationEmail, sendWaitlistPromotedEmail } = require('../utils/mailer');
 
 const PITCH_ATTRIBUTES = ['id', 'name', 'address', 'pricePerHour'];
 const USER_ATTRIBUTES = ['id', 'name', 'email'];
+
+// A cancelled booking frees up its slot immediately, but a cancellation
+// minutes before kickoff leaves an owner no realistic chance to refill
+// it — so the window right before start is locked once a booking is
+// confirmed.
+const CANCELLATION_CUTOFF_HOURS = 2;
 
 // GET /api/bookings/me — everything the logged-in player has booked,
 // newest first, with just enough pitch info to render a list.
@@ -101,6 +107,22 @@ const createBooking = asyncHandler(async (req, res) => {
       throw new ApiError(409, 'That time slot is already booked');
     }
 
+    const closed = await Closure.findOne({
+      where: {
+        pitchId,
+        date,
+        startTime: { [Op.lt]: endTime },
+        endTime: { [Op.gt]: startTime },
+      },
+      transaction: t,
+    });
+    if (closed) {
+      throw new ApiError(
+        409,
+        `This pitch is closed during that time${closed.reason ? `: ${closed.reason}` : ''}`
+      );
+    }
+
     const booking = await Booking.create(
       { pitchId, userId: req.user.id, date, startTime, endTime },
       { transaction: t }
@@ -135,6 +157,11 @@ const createBooking = asyncHandler(async (req, res) => {
 // only if the requester is the player who made it. Soft-cancelling keeps
 // the row around so "past bookings" history stays accurate and the slot
 // visibly frees up for others.
+//
+// If someone was waiting for exactly this slot, cancelling immediately
+// promotes the longest-waiting entry into a real confirmed booking — same
+// row-locked-transaction discipline as createBooking, so a promotion can
+// never race a brand new booking attempt for the same freed slot.
 const cancelBooking = asyncHandler(async (req, res) => {
   const booking = await Booking.findByPk(req.params.id);
   if (!booking) throw new ApiError(404, 'Booking not found');
@@ -142,10 +169,55 @@ const cancelBooking = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'You can only cancel your own bookings');
   }
 
-  booking.status = 'cancelled';
-  await booking.save();
+  if (booking.status === 'confirmed') {
+    const startsAt = new Date(`${booking.date}T${booking.startTime}`);
+    const hoursUntilStart = (startsAt.getTime() - Date.now()) / (60 * 60 * 1000);
+    if (hoursUntilStart < CANCELLATION_CUTOFF_HOURS) {
+      throw new ApiError(
+        400,
+        `Bookings can't be cancelled within ${CANCELLATION_CUTOFF_HOURS} hours of the start time`
+      );
+    }
+  }
+
+  const { pitchId, date, startTime, endTime } = booking;
+
+  const promoted = await sequelize.transaction(async (t) => {
+    await Pitch.findByPk(pitchId, { transaction: t, lock: t.LOCK.UPDATE });
+
+    booking.status = 'cancelled';
+    await booking.save({ transaction: t });
+
+    const nextInLine = await Waitlist.findOne({
+      where: { pitchId, date, startTime, endTime },
+      order: [['createdAt', 'ASC']],
+      transaction: t,
+    });
+    if (!nextInLine) return null;
+
+    const promotedBooking = await Booking.create(
+      { pitchId, userId: nextInLine.userId, date, startTime, endTime },
+      { transaction: t }
+    );
+    await nextInLine.destroy({ transaction: t });
+    return promotedBooking;
+  });
 
   res.json(booking);
+
+  if (promoted) {
+    const [pitch, promotedUser] = await Promise.all([
+      Pitch.findByPk(pitchId, { attributes: ['name', 'address'] }),
+      User.findByPk(promoted.userId, { attributes: ['email'] }),
+    ]);
+    sendWaitlistPromotedEmail(promotedUser.email, {
+      pitchName: pitch.name,
+      pitchAddress: pitch.address,
+      date: promoted.date,
+      startTime: promoted.startTime,
+      endTime: promoted.endTime,
+    });
+  }
 });
 
 module.exports = { getMyBookings, getOwnerBookings, createBooking, cancelBooking };

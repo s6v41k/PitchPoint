@@ -2,6 +2,7 @@ const { Op, fn, col } = require('sequelize');
 const { Pitch, User, Booking, Review } = require('../models');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
+const loadOwnedPitch = require('../utils/loadOwnedPitch');
 
 // Only ever return this subset of User columns when a pitch's owner is
 // included — never leak passwordHash to the client.
@@ -125,19 +126,6 @@ const createPitch = asyncHandler(async (req, res) => {
 
   res.status(201).json(pitch);
 });
-
-// Shared by updatePitch/deletePitch: loads the pitch and throws unless the
-// logged-in user is the one who owns it. Centralizing this means the
-// "can only touch your own pitches" rule can't accidentally be skipped in
-// one of the two handlers.
-async function loadOwnedPitch(req) {
-  const pitch = await Pitch.findByPk(req.params.id);
-  if (!pitch) throw new ApiError(404, 'Pitch not found');
-  if (pitch.ownerId !== req.user.id) {
-    throw new ApiError(403, 'You do not own this pitch');
-  }
-  return pitch;
-}
 
 const updatePitch = asyncHandler(async (req, res) => {
   const pitch = await loadOwnedPitch(req);

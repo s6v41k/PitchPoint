@@ -33,6 +33,14 @@ Booking.init(
       allowNull: false,
       defaultValue: 'confirmed',
     },
+    // Set once the ~24h-before reminder email has gone out (see
+    // utils/reminders.js), so the periodic check never emails the same
+    // booking twice.
+    reminderSent: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   {
     sequelize,

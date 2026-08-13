@@ -100,8 +100,55 @@ async function sendBookingConfirmationEmail(
   });
 }
 
+async function sendWaitlistPromotedEmail(
+  email,
+  { pitchName, pitchAddress, date, startTime, endTime }
+) {
+  await send({
+    to: email,
+    subject: `PitchPoint – A slot opened up: ${pitchName}`,
+    logLine: `Waitlist promotion for ${email}: ${pitchName} on ${date} ${startTime}-${endTime}`,
+    html: layout(
+      'Good news — you’re in!',
+      `
+        <p>A spot you were waiting for just opened up, and it's now booked under your name:</p>
+        <ul style="color: #1e293b;">
+          <li><strong>${pitchName}</strong></li>
+          <li>${pitchAddress}</li>
+          <li>${date}, ${startTime.slice(0, 5)}–${endTime.slice(0, 5)}</li>
+        </ul>
+        <p style="color: #64748b; font-size: 13px;">You can view or cancel this booking any time from "My bookings" in PitchPoint.</p>
+      `
+    ),
+  });
+}
+
+async function sendBookingReminderEmail(
+  email,
+  { pitchName, pitchAddress, date, startTime, endTime }
+) {
+  await send({
+    to: email,
+    subject: `PitchPoint – Reminder: ${pitchName} tomorrow`,
+    logLine: `Booking reminder for ${email}: ${pitchName} on ${date} ${startTime}-${endTime}`,
+    html: layout(
+      'See you tomorrow!',
+      `
+        <p>Just a reminder about your upcoming booking:</p>
+        <ul style="color: #1e293b;">
+          <li><strong>${pitchName}</strong></li>
+          <li>${pitchAddress}</li>
+          <li>${date}, ${startTime.slice(0, 5)}–${endTime.slice(0, 5)}</li>
+        </ul>
+      `
+    ),
+  });
+}
+
 module.exports = {
   sendPasswordResetEmail,
   sendVerificationEmail,
   sendBookingConfirmationEmail,
+  sendWaitlistPromotedEmail,
+  sendBookingReminderEmail,
 };

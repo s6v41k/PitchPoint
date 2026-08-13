@@ -6,6 +6,8 @@ const User = require('./User');
 const Pitch = require('./Pitch');
 const Booking = require('./Booking');
 const Review = require('./Review');
+const Waitlist = require('./Waitlist');
+const Closure = require('./Closure');
 
 // A User (owner) has many Pitches; a Pitch belongs to one User (owner).
 User.hasMany(Pitch, { foreignKey: 'ownerId', as: 'pitches' });
@@ -25,4 +27,15 @@ Review.belongsTo(Pitch, { foreignKey: 'pitchId', as: 'pitch' });
 User.hasMany(Review, { foreignKey: 'userId', as: 'reviews' });
 Review.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-module.exports = { sequelize, User, Pitch, Booking, Review };
+// A Pitch/User can each have many Waitlist entries; a Waitlist entry
+// belongs to one Pitch and one User.
+Pitch.hasMany(Waitlist, { foreignKey: 'pitchId', as: 'waitlistEntries' });
+Waitlist.belongsTo(Pitch, { foreignKey: 'pitchId', as: 'pitch' });
+User.hasMany(Waitlist, { foreignKey: 'userId', as: 'waitlistEntries' });
+Waitlist.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// A Pitch has many Closures (one-off exceptions to its weekly hours).
+Pitch.hasMany(Closure, { foreignKey: 'pitchId', as: 'closures' });
+Closure.belongsTo(Pitch, { foreignKey: 'pitchId', as: 'pitch' });
+
+module.exports = { sequelize, User, Pitch, Booking, Review, Waitlist, Closure };

@@ -12,8 +12,29 @@ const {
   deletePitch,
 } = require('../controllers/pitchController');
 const { listReviews, upsertReview, deleteReview } = require('../controllers/reviewController');
+const { listClosures, createClosure, deleteClosure } = require('../controllers/closureController');
+const {
+  listMyWaitlistEntries,
+  joinWaitlist,
+  leaveWaitlist,
+} = require('../controllers/waitlistController');
 
 const router = Router();
+
+// Shared by bookings, closures, and waitlist entries — all keyed by the
+// same [date, startTime, endTime] shape, on the hour, same as bookings
+// (see bookingRoutes.js).
+const slotValidation = [
+  body('date')
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage('date must be in YYYY-MM-DD format'),
+  body('startTime')
+    .matches(/^([01]\d|2[0-3]):00(:00)?$/)
+    .withMessage('startTime must be on the hour, e.g. 14:00'),
+  body('endTime')
+    .matches(/^([01]\d|2[0-3]):00(:00)?$/)
+    .withMessage('endTime must be on the hour, e.g. 15:00'),
+];
 
 const pitchValidation = [
   body('name').trim().notEmpty().withMessage('Name is required'),
@@ -68,6 +89,20 @@ router.post(
   upsertReview
 );
 router.delete('/:id/reviews', requireAuth, deleteReview);
+
+router.get('/:id/closures', listClosures);
+router.post(
+  '/:id/closures',
+  requireAuth,
+  requireRole('owner'),
+  validate([...slotValidation, body('reason').optional({ nullable: true }).trim()]),
+  createClosure
+);
+router.delete('/:id/closures/:closureId', requireAuth, requireRole('owner'), deleteClosure);
+
+router.get('/:id/waitlist/mine', requireAuth, listMyWaitlistEntries);
+router.post('/:id/waitlist', requireAuth, validate(slotValidation), joinWaitlist);
+router.delete('/:id/waitlist/:entryId', requireAuth, leaveWaitlist);
 
 // Owner-only routes.
 router.post('/', requireAuth, requireRole('owner'), validate(pitchValidation), createPitch);
