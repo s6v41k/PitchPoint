@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth'
 import { useToast } from '../composables/useToast'
 import { fetchUsers, updateUserRole, deleteUser } from '../api/admin'
 import ConfirmModal from '../components/ConfirmModal.vue'
+import { downloadCSV } from '../utils/csv'
 
 const auth = useAuthStore()
 const { showToast } = useToast()
@@ -64,6 +65,16 @@ async function confirmDelete() {
   }
 }
 
+function exportUsersCSV() {
+  downloadCSV('pitchpoint-users.csv', users.value, [
+    { label: 'Name', value: (u) => u.name },
+    { label: 'Email', value: (u) => u.email },
+    { label: 'Role', value: (u) => u.role },
+    { label: 'Verified', value: (u) => (u.emailVerified ? 'Yes' : 'No') },
+    { label: 'Joined', value: (u) => u.createdAt },
+  ])
+}
+
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString(undefined, {
     day: 'numeric',
@@ -83,8 +94,8 @@ onMounted(load)
     </div>
     <p class="mt-1 text-slate-500">Manage every account on the platform.</p>
 
-    <div class="mt-4 max-w-sm">
-      <div class="relative">
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="relative max-w-sm flex-1">
         <MagnifyingGlassIcon
           class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
         />
@@ -95,6 +106,14 @@ onMounted(load)
           class="w-full rounded-md border border-slate-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
+      <button
+        v-if="users.length > 0"
+        type="button"
+        class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        @click="exportUsersCSV"
+      >
+        Export CSV
+      </button>
     </div>
 
     <p v-if="error" class="mt-4 text-sm text-red-600">{{ error }}</p>

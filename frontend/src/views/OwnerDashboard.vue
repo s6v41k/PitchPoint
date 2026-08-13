@@ -5,14 +5,11 @@ import 'chart.js/auto'
 import { BuildingOffice2Icon, CalendarDaysIcon } from '@heroicons/vue/24/outline'
 import BookingList from '../components/BookingList.vue'
 import PitchForm from '../components/PitchForm.vue'
+import PitchClosures from '../components/PitchClosures.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
-import {
-  fetchMyPitches,
-  createPitch,
-  updatePitch,
-  deletePitch,
-} from '../api/pitches'
+import { fetchMyPitches, createPitch, updatePitch, deletePitch } from '../api/pitches'
 import { fetchOwnerBookings } from '../api/bookings'
+import { downloadCSV } from '../utils/csv'
 
 const pitches = ref([])
 const bookings = ref([])
@@ -23,6 +20,23 @@ const error = ref('')
 const editingPitch = ref(null)
 const showForm = ref(false)
 const pitchPendingDelete = ref(null)
+const expandedClosuresPitchId = ref(null)
+
+function toggleClosures(pitchId) {
+  expandedClosuresPitchId.value = expandedClosuresPitchId.value === pitchId ? null : pitchId
+}
+
+function exportBookingsCSV() {
+  downloadCSV('pitchpoint-bookings.csv', bookings.value, [
+    { label: 'Pitch', value: (b) => b.pitch?.name },
+    { label: 'Booked by', value: (b) => b.user?.name },
+    { label: 'Email', value: (b) => b.user?.email },
+    { label: 'Date', value: (b) => b.date },
+    { label: 'Start', value: (b) => b.startTime?.slice(0, 5) },
+    { label: 'End', value: (b) => b.endTime?.slice(0, 5) },
+    { label: 'Status', value: (b) => b.status },
+  ])
+}
 
 const confirmedBookingCount = computed(
   () => bookings.value.filter((b) => b.status === 'confirmed').length
@@ -32,10 +46,7 @@ async function loadAll() {
   loading.value = true
   error.value = ''
   try {
-    ;[pitches.value, bookings.value] = await Promise.all([
-      fetchMyPitches(),
-      fetchOwnerBookings(),
-    ])
+    ;[pitches.value, bookings.value] = await Promise.all([fetchMyPitches(), fetchOwnerBookings()])
   } catch (err) {
     error.value = err.response?.data?.message || 'Could not load dashboard data.'
   } finally {
@@ -222,7 +233,10 @@ onMounted(loadAll)
       />
 
       <p v-if="loading" class="mt-4 text-slate-500">Loading…</p>
-      <div v-else-if="pitches.length === 0" class="mt-4 flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 py-10 text-center">
+      <div
+        v-else-if="pitches.length === 0"
+        class="mt-4 flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 py-10 text-center"
+      >
         <BuildingOffice2Icon class="h-9 w-9 text-slate-300" />
         <p class="text-slate-500">You haven't added any pitches yet.</p>
       </div>
@@ -231,37 +245,74 @@ onMounted(loadAll)
         <li
           v-for="pitch in pitches"
           :key="pitch.id"
-          class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
         >
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-              <BuildingOffice2Icon class="h-5 w-5" />
-            </span>
-            <div>
-              <p class="font-medium text-slate-900">{{ pitch.name }}</p>
-              <p class="text-sm text-slate-500">{{ pitch.address }}</p>
-              <p class="mt-1 flex items-center gap-1 text-sm text-slate-500">
-                <span class="font-medium text-amber-600">€{{ Number(pitch.pricePerHour).toFixed(2) }}/h</span>
-                <span>·</span>
-                <CalendarDaysIcon class="h-3.5 w-3.5" />
-                {{ pitch.bookings?.length || 0 }} booking(s)
-              </p>
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <span
+                class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600"
+              >
+                <BuildingOffice2Icon class="h-5 w-5" />
+              </span>
+              <div>
+                <p class="font-medium text-slate-900">{{ pitch.name }}</p>
+                <p class="text-sm text-slate-500">{{ pitch.address }}</p>
+                <p class="mt-1 flex items-center gap-1 text-sm text-slate-500">
+                  <span class="font-medium text-amber-600"
+                    >€{{ Number(pitch.pricePerHour).toFixed(2) }}/h</span
+                  >
+                  <span>·</span>
+                  <CalendarDaysIcon class="h-3.5 w-3.5" />
+                  {{ pitch.bookings?.length || 0 }} booking(s)
+                </p>
+              </div>
+            </div>
+            <div class="flex shrink-0 gap-3 text-sm font-medium">
+              <button
+                type="button"
+                class="text-slate-600 hover:text-slate-800"
+                @click="toggleClosures(pitch.id)"
+              >
+                {{ expandedClosuresPitchId === pitch.id ? 'Hide closures' : 'Closures' }}
+              </button>
+              <button
+                type="button"
+                class="text-indigo-700 hover:text-indigo-800"
+                @click="startEdit(pitch)"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-700"
+                @click="pitchPendingDelete = pitch"
+              >
+                Delete
+              </button>
             </div>
           </div>
-          <div class="flex shrink-0 gap-3 text-sm font-medium">
-            <button type="button" class="text-indigo-700 hover:text-indigo-800" @click="startEdit(pitch)">
-              Edit
-            </button>
-            <button type="button" class="text-red-600 hover:text-red-700" @click="pitchPendingDelete = pitch">
-              Delete
-            </button>
-          </div>
+
+          <PitchClosures
+            v-if="expandedClosuresPitchId === pitch.id"
+            :pitch-id="pitch.id"
+            class="mt-4 border-t border-slate-100 pt-4"
+          />
         </li>
       </ul>
     </section>
 
     <section>
-      <h2 class="text-xl font-bold text-slate-900">Bookings for my pitches</h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-slate-900">Bookings for my pitches</h2>
+        <button
+          v-if="bookings.length > 0"
+          type="button"
+          class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+          @click="exportBookingsCSV"
+        >
+          Export CSV
+        </button>
+      </div>
       <div class="mt-4">
         <BookingList :bookings="bookings" show-user />
       </div>
