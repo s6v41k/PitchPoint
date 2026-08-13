@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { sequelize, User, Pitch, Booking } = require('../models');
+const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { sendPasswordResetEmail, sendVerificationEmail } = require('../utils/mailer');
+const deleteUserCascade = require('../utils/deleteUserCascade');
 
 const SALT_ROUNDS = 10;
 // Distinct token "purposes" so a password-reset or email-verify link can
@@ -209,25 +210,7 @@ const resendVerification = asyncHandler(async (req, res) => {
 // with the account. There's no "soft" undo here — this is the account
 // itself asking to be forgotten, not a single resource.
 const deleteMe = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-
-  await sequelize.transaction(async (t) => {
-    await Booking.destroy({ where: { userId }, transaction: t });
-
-    const ownedPitches = await Pitch.findAll({
-      where: { ownerId: userId },
-      attributes: ['id'],
-      transaction: t,
-    });
-    const pitchIds = ownedPitches.map((p) => p.id);
-    if (pitchIds.length > 0) {
-      await Booking.destroy({ where: { pitchId: pitchIds }, transaction: t });
-      await Pitch.destroy({ where: { ownerId: userId }, transaction: t });
-    }
-
-    await User.destroy({ where: { id: userId }, transaction: t });
-  });
-
+  await deleteUserCascade(req.user.id);
   res.status(204).send();
 });
 

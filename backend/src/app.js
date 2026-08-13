@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const authRoutes = require('./routes/authRoutes');
 const pitchRoutes = require('./routes/pitchRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const ApiError = require('./utils/ApiError');
 
@@ -30,6 +31,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/pitches', pitchRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Anything that falls through every route above is a 404 — forward it to
 // the centralized error handler instead of letting Express send its

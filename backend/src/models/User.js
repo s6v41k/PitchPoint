@@ -38,7 +38,11 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('player', 'owner'),
+      // 'admin' is never assignable through the register endpoint (see
+      // authRoutes.js's validator) — the first admin is created with the
+      // promote-admin.js script, then can promote/demote others from the
+      // admin panel.
+      type: DataTypes.ENUM('player', 'owner', 'admin'),
       allowNull: false,
       defaultValue: 'player',
     },

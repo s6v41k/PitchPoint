@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "db:seed": "node src/scripts/seed.js",
+    "promote-admin": "node src/scripts/promote-admin.js",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
   },
