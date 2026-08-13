@@ -79,7 +79,10 @@ const inputClass =
 </script>
 
 <template>
-  <form class="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm" @submit.prevent="handleSubmit">
+  <form
+    class="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+    @submit.prevent="handleSubmit"
+  >
     <div class="grid grid-cols-2 gap-3">
       <div class="col-span-2">
         <label class="block text-sm font-medium text-slate-600">Name</label>
@@ -115,7 +118,14 @@ const inputClass =
       </div>
       <div class="col-span-2">
         <label class="block text-sm font-medium text-slate-600">Price per hour (€)</label>
-        <input v-model="form.pricePerHour" type="number" min="0" step="0.01" required :class="inputClass" />
+        <input
+          v-model="form.pricePerHour"
+          type="number"
+          min="0"
+          step="0.01"
+          required
+          :class="inputClass"
+        />
       </div>
       <div>
         <label class="block text-sm font-medium text-slate-600">Opens at</label>
@@ -130,16 +140,25 @@ const inputClass =
         </select>
       </div>
       <div class="col-span-2">
-        <label class="block text-sm font-medium text-slate-600">Photo URLs (one per line, optional)</label>
+        <label class="block text-sm font-medium text-slate-600"
+          >Photo URLs (one per line, optional)</label
+        >
         <textarea v-model="form.photosText" rows="2" :class="inputClass"></textarea>
       </div>
     </div>
 
     <div class="flex gap-2">
-      <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+      <button
+        type="submit"
+        class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+      >
         {{ initial ? 'Save changes' : 'Create pitch' }}
       </button>
-      <button type="button" class="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200" @click="$emit('cancel')">
+      <button
+        type="button"
+        class="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200"
+        @click="$emit('cancel')"
+      >
         Cancel
       </button>
     </div>

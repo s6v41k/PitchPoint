@@ -33,7 +33,10 @@ function formatDate(dateStr) {
 </script>
 
 <template>
-  <div v-if="bookings.length === 0" class="flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 py-10 text-center">
+  <div
+    v-if="bookings.length === 0"
+    class="flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 py-10 text-center"
+  >
     <InboxIcon class="h-9 w-9 text-slate-300" />
     <p class="text-slate-500">No bookings yet.</p>
   </div>
@@ -45,14 +48,18 @@ function formatDate(dateStr) {
       class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
     >
       <div class="flex items-start gap-3">
-        <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+        <span
+          class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600"
+        >
           <CalendarDaysIcon class="h-5 w-5" />
         </span>
         <div>
           <p class="font-medium text-slate-900">{{ booking.pitch?.name }}</p>
           <p class="text-sm text-slate-500">{{ booking.pitch?.address }}</p>
           <p class="mt-1 text-sm text-slate-600">
-            {{ formatDate(booking.date) }} · {{ booking.startTime.slice(0, 5) }}–{{ booking.endTime.slice(0, 5) }}
+            {{ formatDate(booking.date) }} · {{ booking.startTime.slice(0, 5) }}–{{
+              booking.endTime.slice(0, 5)
+            }}
           </p>
           <p v-if="showUser && booking.user" class="text-sm text-slate-500">
             Booked by {{ booking.user.name }} ({{ booking.user.email }})

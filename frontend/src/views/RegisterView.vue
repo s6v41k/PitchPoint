@@ -73,14 +73,22 @@ async function handleSubmit() {
           <div class="mt-1.5 grid grid-cols-2 gap-2 text-sm">
             <label
               class="cursor-pointer rounded-md border px-3 py-2 text-center transition"
-              :class="role === 'player' ? 'border-indigo-500 bg-indigo-50 font-medium text-indigo-700' : 'border-slate-300 text-slate-600 hover:border-slate-400'"
+              :class="
+                role === 'player'
+                  ? 'border-indigo-500 bg-indigo-50 font-medium text-indigo-700'
+                  : 'border-slate-300 text-slate-600 hover:border-slate-400'
+              "
             >
               <input v-model="role" type="radio" value="player" class="sr-only" />
               Player
             </label>
             <label
               class="cursor-pointer rounded-md border px-3 py-2 text-center transition"
-              :class="role === 'owner' ? 'border-indigo-500 bg-indigo-50 font-medium text-indigo-700' : 'border-slate-300 text-slate-600 hover:border-slate-400'"
+              :class="
+                role === 'owner'
+                  ? 'border-indigo-500 bg-indigo-50 font-medium text-indigo-700'
+                  : 'border-slate-300 text-slate-600 hover:border-slate-400'
+              "
             >
               <input v-model="role" type="radio" value="owner" class="sr-only" />
               Owner
@@ -102,7 +110,9 @@ async function handleSubmit() {
 
     <p class="mt-4 text-center text-sm text-slate-500">
       Already have an account?
-      <RouterLink to="/login" class="font-medium text-indigo-700 hover:text-indigo-800">Log in</RouterLink>
+      <RouterLink to="/login" class="font-medium text-indigo-700 hover:text-indigo-800"
+        >Log in</RouterLink
+      >
     </p>
   </div>
 </template>

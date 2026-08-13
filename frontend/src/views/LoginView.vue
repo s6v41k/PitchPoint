@@ -47,7 +47,10 @@ async function handleSubmit() {
         <div>
           <div class="flex items-center justify-between">
             <label class="block text-sm font-medium text-slate-600">Password</label>
-            <RouterLink to="/forgot-password" class="text-xs font-medium text-indigo-600 hover:text-indigo-800">
+            <RouterLink
+              to="/forgot-password"
+              class="text-xs font-medium text-indigo-600 hover:text-indigo-800"
+            >
               Forgot password?
             </RouterLink>
           </div>
@@ -73,7 +76,9 @@ async function handleSubmit() {
 
     <p class="mt-4 text-center text-sm text-slate-500">
       No account yet?
-      <RouterLink to="/register" class="font-medium text-indigo-700 hover:text-indigo-800">Sign up</RouterLink>
+      <RouterLink to="/register" class="font-medium text-indigo-700 hover:text-indigo-800"
+        >Sign up</RouterLink
+      >
     </p>
   </div>
 </template>

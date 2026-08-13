@@ -87,7 +87,9 @@ onMounted(load)
     <div v-else-if="pitch" class="space-y-6">
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <div class="sm:col-span-2">
-          <div class="relative flex h-64 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-400">
+          <div
+            class="relative flex h-64 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-400"
+          >
             <img
               v-if="pitch.photos?.[0]"
               :src="pitch.photos[0]"
@@ -98,7 +100,8 @@ onMounted(load)
             <span
               class="absolute right-3 top-3 rounded-full bg-white/95 px-3 py-1.5 text-sm font-semibold text-amber-600 shadow-sm"
             >
-              €{{ Number(pitch.pricePerHour).toFixed(2) }} <span class="font-normal text-slate-500">/ hour</span>
+              €{{ Number(pitch.pricePerHour).toFixed(2) }}
+              <span class="font-normal text-slate-500">/ hour</span>
             </span>
           </div>
         </div>
@@ -109,7 +112,9 @@ onMounted(load)
             <div v-if="pitch.reviewCount > 0" class="mt-1 flex items-center gap-1.5">
               <StarRating :rating="pitch.avgRating" />
               <span class="text-sm text-slate-500">
-                {{ pitch.avgRating.toFixed(1) }} ({{ pitch.reviewCount }} review{{ pitch.reviewCount > 1 ? 's' : '' }})
+                {{ pitch.avgRating.toFixed(1) }} ({{ pitch.reviewCount }} review{{
+                  pitch.reviewCount > 1 ? 's' : ''
+                }})
               </span>
             </div>
             <a
@@ -126,15 +131,22 @@ onMounted(load)
               <span class="rounded-full bg-indigo-50 px-3 py-1 font-medium text-indigo-700">
                 {{ SURFACE_LABELS[pitch.surfaceType] ?? pitch.surfaceType }}
               </span>
-              <span class="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">{{ pitch.size }}</span>
+              <span class="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">{{
+                pitch.size
+              }}</span>
               <span class="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
                 {{ pitch.openTime.slice(0, 5) }}–{{ pitch.closeTime.slice(0, 5) }}
               </span>
             </div>
           </div>
 
-          <div v-if="pitch.owner" class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
-            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+          <div
+            v-if="pitch.owner"
+            class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3"
+          >
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700"
+            >
               {{ ownerInitials }}
             </span>
             <div class="text-sm">

@@ -28,7 +28,9 @@ onMounted(async () => {
 
 <template>
   <div class="mx-auto max-w-sm py-8">
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg shadow-slate-900/5">
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg shadow-slate-900/5"
+    >
       <h1 class="text-2xl font-bold text-slate-900">Email verification</h1>
 
       <p v-if="loading" class="mt-4 text-slate-500">Verifying…</p>

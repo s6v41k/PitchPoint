@@ -1,7 +1,12 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { UserCircleIcon, KeyIcon, ExclamationTriangleIcon, EnvelopeIcon } from '@heroicons/vue/24/outline'
+import {
+  UserCircleIcon,
+  KeyIcon,
+  ExclamationTriangleIcon,
+  EnvelopeIcon,
+} from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth'
 import { deleteMe, resendVerification } from '../api/auth'
 import ConfirmModal from '../components/ConfirmModal.vue'
@@ -120,7 +125,9 @@ async function handlePasswordSubmit() {
 <template>
   <div class="mx-auto max-w-lg space-y-8">
     <div class="flex items-center gap-4">
-      <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-lg font-semibold text-indigo-700">
+      <span
+        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-lg font-semibold text-indigo-700"
+      >
         {{ initials }}
       </span>
       <div>
@@ -148,7 +155,10 @@ async function handlePasswordSubmit() {
       </button>
     </div>
 
-    <form class="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm" @submit.prevent="handleProfileSubmit">
+    <form
+      class="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      @submit.prevent="handleProfileSubmit"
+    >
       <h2 class="flex items-center gap-2 font-semibold text-slate-900">
         <UserCircleIcon class="h-5 w-5 text-indigo-600" />
         Account details
@@ -185,7 +195,10 @@ async function handlePasswordSubmit() {
       </button>
     </form>
 
-    <form class="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm" @submit.prevent="handlePasswordSubmit">
+    <form
+      class="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      @submit.prevent="handlePasswordSubmit"
+    >
       <h2 class="flex items-center gap-2 font-semibold text-slate-900">
         <KeyIcon class="h-5 w-5 text-indigo-600" />
         Change password
@@ -240,8 +253,8 @@ async function handlePasswordSubmit() {
       </h2>
       <p class="text-sm text-red-700">
         Deleting your account permanently removes your bookings
-        <span v-if="auth.isOwner">, your pitches, and every booking made on them</span>.
-        This cannot be undone.
+        <span v-if="auth.isOwner">, your pitches, and every booking made on them</span>. This cannot
+        be undone.
       </p>
       <p v-if="deleteError" class="text-sm text-red-700">{{ deleteError }}</p>
       <button

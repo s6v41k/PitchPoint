@@ -61,7 +61,9 @@ async function handleSubmit() {
     </div>
 
     <p class="mt-4 text-center text-sm text-slate-500">
-      <RouterLink to="/login" class="font-medium text-indigo-700 hover:text-indigo-800">Back to log in</RouterLink>
+      <RouterLink to="/login" class="font-medium text-indigo-700 hover:text-indigo-800"
+        >Back to log in</RouterLink
+      >
     </p>
   </div>
 </template>

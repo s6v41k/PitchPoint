@@ -49,7 +49,9 @@ onMounted(loadPitches)
 
 <template>
   <div>
-    <div class="-mx-4 rounded-b-2xl bg-gradient-to-r from-indigo-700 to-indigo-900 px-4 py-8 sm:-mx-0 sm:rounded-2xl sm:px-8">
+    <div
+      class="-mx-4 rounded-b-2xl bg-gradient-to-r from-indigo-700 to-indigo-900 px-4 py-8 sm:-mx-0 sm:rounded-2xl sm:px-8"
+    >
       <h1 class="text-2xl font-bold text-white sm:text-3xl">Find a pitch near you</h1>
       <p class="mt-1 text-indigo-100">
         Search and filter pitches, then book a time slot in a few clicks.
@@ -61,7 +63,9 @@ onMounted(loadPitches)
       @submit.prevent="loadPitches"
     >
       <div class="relative col-span-2 sm:col-span-1 lg:col-span-2">
-        <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <MagnifyingGlassIcon
+          class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+        />
         <input
           v-model="filters.search"
           type="text"
@@ -123,7 +127,10 @@ onMounted(loadPitches)
     <p v-else-if="loading" class="mt-6 text-slate-500">Loading pitches…</p>
 
     <template v-else>
-      <div v-if="pitches.length === 0" class="mt-10 flex flex-col items-center gap-2 py-10 text-center">
+      <div
+        v-if="pitches.length === 0"
+        class="mt-10 flex flex-col items-center gap-2 py-10 text-center"
+      >
         <FaceFrownIcon class="h-10 w-10 text-slate-300" />
         <p class="text-slate-500">No pitches match your search.</p>
       </div>

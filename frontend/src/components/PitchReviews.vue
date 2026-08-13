@@ -27,9 +27,7 @@ const myComment = ref('')
 // A player has at most one review per pitch (enforced server-side) — find
 // it so the form can switch to "edit" wording and a delete option can
 // show up, instead of silently overwriting it on the next submit.
-const myReview = computed(() =>
-  reviews.value.find((r) => r.user?.id === auth.user?.id)
-)
+const myReview = computed(() => reviews.value.find((r) => r.user?.id === auth.user?.id))
 
 async function load() {
   loading.value = true
@@ -71,7 +69,11 @@ async function handleDelete() {
 }
 
 function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 onMounted(load)
@@ -84,7 +86,11 @@ onMounted(load)
       Reviews
     </h2>
 
-    <form v-if="auth.isAuthenticated" class="mt-4 space-y-2 rounded-lg bg-slate-50 p-4" @submit.prevent="handleSubmit">
+    <form
+      v-if="auth.isAuthenticated"
+      class="mt-4 space-y-2 rounded-lg bg-slate-50 p-4"
+      @submit.prevent="handleSubmit"
+    >
       <p class="text-sm font-medium text-slate-700">
         {{ myReview ? 'Update your review' : 'Played here? Leave a review' }}
       </p>
@@ -97,7 +103,14 @@ onMounted(load)
           @mouseenter="hoverRating = n"
           @click="myRating = n"
         >
-          <StarIcon :class="n <= (hoverRating || myRating || myReview?.rating || 0) ? 'text-amber-400' : 'text-slate-300'" class="h-6 w-6" />
+          <StarIcon
+            :class="
+              n <= (hoverRating || myRating || myReview?.rating || 0)
+                ? 'text-amber-400'
+                : 'text-slate-300'
+            "
+            class="h-6 w-6"
+          />
         </button>
       </div>
       <textarea
@@ -126,7 +139,9 @@ onMounted(load)
       </div>
     </form>
     <p v-else class="mt-3 text-sm text-slate-500">
-      <RouterLink to="/login" class="font-medium text-indigo-700 hover:text-indigo-800">Log in</RouterLink>
+      <RouterLink to="/login" class="font-medium text-indigo-700 hover:text-indigo-800"
+        >Log in</RouterLink
+      >
       to leave a review.
     </p>
 
@@ -134,7 +149,11 @@ onMounted(load)
     <p v-else-if="reviews.length === 0" class="mt-4 text-sm text-slate-500">No reviews yet.</p>
 
     <ul v-else class="mt-4 space-y-4">
-      <li v-for="review in reviews" :key="review.id" class="border-t border-slate-100 pt-4 first:border-t-0 first:pt-0">
+      <li
+        v-for="review in reviews"
+        :key="review.id"
+        class="border-t border-slate-100 pt-4 first:border-t-0 first:pt-0"
+      >
         <div class="flex items-center justify-between">
           <p class="font-medium text-slate-800">{{ review.user?.name || 'Player' }}</p>
           <span class="text-xs text-slate-400">{{ formatDate(review.createdAt) }}</span>

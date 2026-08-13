@@ -21,7 +21,9 @@ const SURFACE_LABELS = {
     :to="{ name: 'pitch-detail', params: { id: pitch.id } }"
     class="group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10"
   >
-    <div class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-400">
+    <div
+      class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-400"
+    >
       <img
         v-if="pitch.photos?.[0]"
         :src="pitch.photos[0]"
@@ -39,7 +41,10 @@ const SURFACE_LABELS = {
     <div class="space-y-1.5 p-4">
       <div class="flex items-center justify-between gap-2">
         <h3 class="truncate font-semibold text-slate-900">{{ pitch.name }}</h3>
-        <span v-if="pitch.reviewCount > 0" class="flex shrink-0 items-center gap-0.5 text-xs font-medium text-slate-600">
+        <span
+          v-if="pitch.reviewCount > 0"
+          class="flex shrink-0 items-center gap-0.5 text-xs font-medium text-slate-600"
+        >
           <StarIcon class="h-3.5 w-3.5 text-amber-400" />
           {{ pitch.avgRating.toFixed(1) }}
         </span>
