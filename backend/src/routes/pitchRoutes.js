@@ -37,8 +37,18 @@ const slotValidation = [
 ];
 
 const pitchValidation = [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('address').trim().notEmpty().withMessage('Address is required'),
+  body('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Name is required')
+    .isLength({ max: 150 })
+    .withMessage('Name must be 150 characters or fewer'),
+  body('address')
+    .trim()
+    .notEmpty()
+    .withMessage('Address is required')
+    .isLength({ max: 200 })
+    .withMessage('Address must be 200 characters or fewer'),
   body('lat').optional({ nullable: true }).isFloat().withMessage('lat must be a number'),
   body('lng').optional({ nullable: true }).isFloat().withMessage('lng must be a number'),
   body('surfaceType')
@@ -95,7 +105,14 @@ router.post(
   '/:id/closures',
   requireAuth,
   requireRole('owner'),
-  validate([...slotValidation, body('reason').optional({ nullable: true }).trim()]),
+  validate([
+    ...slotValidation,
+    body('reason')
+      .optional({ nullable: true })
+      .trim()
+      .isLength({ max: 200 })
+      .withMessage('Reason must be 200 characters or fewer'),
+  ]),
   createClosure
 );
 router.delete('/:id/closures/:closureId', requireAuth, requireRole('owner'), deleteClosure);
