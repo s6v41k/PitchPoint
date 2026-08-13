@@ -62,10 +62,16 @@ async function handleSubmit() {
           <input
             v-model="password"
             type="password"
-            minlength="6"
+            minlength="8"
+            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
+            title="At least 8 characters, with an uppercase letter, a lowercase letter, a number, and a special character"
             required
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
+          <p class="mt-1 text-xs text-slate-400">
+            8+ characters, with an uppercase letter, a lowercase letter, a number, and a special
+            character.
+          </p>
         </div>
 
         <fieldset>
