@@ -40,10 +40,10 @@ onMounted(async () => {
       <p v-else class="mt-4 text-red-600">{{ error }}</p>
 
       <RouterLink
-        :to="{ name: 'browse-pitches' }"
+        :to="{ name: 'login' }"
         class="mt-6 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
       >
-        Continue to PitchPoint
+        Continue to login
       </RouterLink>
     </div>
   </div>

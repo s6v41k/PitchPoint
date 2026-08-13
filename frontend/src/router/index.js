@@ -31,6 +31,11 @@ const routes = [
     component: () => import('../views/RegisterView.vue'),
   },
   {
+    path: '/check-email',
+    name: 'check-email',
+    component: () => import('../views/CheckEmailView.vue'),
+  },
+  {
     path: '/forgot-password',
     name: 'forgot-password',
     component: () => import('../views/ForgotPasswordView.vue'),

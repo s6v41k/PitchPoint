@@ -43,11 +43,6 @@ export const useAuthStore = defineStore('auth', {
       this.setSession(token, user)
     },
 
-    async register(payload) {
-      const { token, user } = await authApi.register(payload)
-      this.setSession(token, user)
-    },
-
     async updateProfile(payload) {
       const { user } = await authApi.updateMe(payload)
       // Token doesn't change — only the profile fields do — so just patch

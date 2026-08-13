@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { register } from '../api/auth'
 
-const auth = useAuthStore()
 const router = useRouter()
 
 const name = ref('')
@@ -13,17 +12,20 @@ const role = ref('player')
 const error = ref('')
 const submitting = ref(false)
 
+// Registering does not log you in — the account needs its email verified
+// first (see CheckEmailView), so the next stop is that screen rather than
+// straight into the app.
 async function handleSubmit() {
   error.value = ''
   submitting.value = true
   try {
-    await auth.register({
+    await register({
       name: name.value,
       email: email.value,
       password: password.value,
       role: role.value,
     })
-    router.push({ name: 'browse-pitches' })
+    router.push({ name: 'check-email', query: { email: email.value } })
   } catch (err) {
     error.value = err.response?.data?.message || 'Registration failed.'
   } finally {
